@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace Repository.Configuration
 {
-    public class CompanyConfiguration : IEntityTypeConfiguration<Company>
+    public class CompanyConfiguration : IEntityTypeConfiguration<Models>
     {
-        public void Configure(EntityTypeBuilder<Company> builder)
+        public void Configure(EntityTypeBuilder<Models> builder)
         {
             builder.HasData
             (
-            new Company
+            new Models
             {
                 Id = new Guid("c9d4c053-49b6-410c-bc78-2d54a9991870"),
                 Name = "IT_Solutions Ltd",
                 Address = "583 Wall Dr. Gwynn Oak, MD 21207",
                 Country = "USA"
             },
-            new Company
+            new Models
             {
                 Id = new Guid("3d490a70-94ce-4d15-9494-5248280c2ce3"),
                 Name = "Admin_Solutions Ltd",

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public class Company
+    public class Models
     {
         [Column("CompanyId")]
         public Guid Id { get; set; }
@@ -35,6 +35,6 @@ namespace Entities.Models
         public string? Position { get;set; }
         [ForeignKey(nameof(Company))]
         public Guid CompanyId { get; set; }
-        public Company? Company { get; set; }
+        public Models? Company { get; set; }
     }
 }
