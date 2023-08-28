@@ -1,5 +1,8 @@
+using CompanyEmployees.ContextFactory;
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Repository;
 
 namespace CompanyEmployees.Controllers
 {

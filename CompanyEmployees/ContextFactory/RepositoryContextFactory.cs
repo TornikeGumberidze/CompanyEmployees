@@ -8,6 +8,7 @@ namespace CompanyEmployees.ContextFactory
     {
         public RepositoryContext CreateDbContext(string[] args)
         {
+            Console.WriteLine("CreateDbContext");
             var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")

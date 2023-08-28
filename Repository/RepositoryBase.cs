@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+    public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         protected RepositoryContext RepositoryContext;
         public RepositoryBase(RepositoryContext repositoryContext)
-        => RepositoryContext = repositoryContext;
-
+        {
+            Console.WriteLine("RepositoryBase");
+            RepositoryContext = repositoryContext;
+        }
         public IQueryable<T> FindAll(bool trackChanges) =>
         !trackChanges ?
         RepositoryContext.Set<T>()
