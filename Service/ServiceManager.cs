@@ -18,9 +18,9 @@ namespace Service
 logger,IMapper mapper)
 {
 _companyService = new Lazy<ICompanyService>(() => new
-CompanyService(repositoryManager, logger,mapper));
+CompanyService(repositoryManager, logger, mapper));
 _employeeService = new Lazy<IEmployeeService>(() => new
-EmployeeService(repositoryManager, logger,mapper));
+EmployeeService(repositoryManager, logger, mapper));
 }
         public ICompanyService CompanyService => _companyService.Value;
 

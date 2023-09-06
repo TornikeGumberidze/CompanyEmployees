@@ -5,6 +5,7 @@ using Service.Contracts;
 using System.Runtime.CompilerServices;
 using Service;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.Swagger;
 
 namespace CompanyEmployees.Extensions
 {
@@ -27,8 +28,14 @@ services.AddCors(options =>
  services.AddSingleton<ILoggerManager, LoggerManager>();
         public static void ConfigureRepositoryManager(this IServiceCollection services) =>
             services.AddScoped<IRepositoryManager, RepositoryManager>();
-        public static void ConfigureServiceManager(this IServiceCollection services) =>
+        public static void ConfigureServiceManager(this IServiceCollection services)
+        {
             services.AddScoped<IServiceManager, ServiceManager>();
+            services.AddSwaggerGen(c =>//esaxali
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo{ Title = "My Api", Version = "v1" });
+            });
+        }
         public static void ConfigureSqlContext(this IServiceCollection services,
 IConfiguration configuration) =>
 services.AddDbContext<RepositoryContext>(opts =>
