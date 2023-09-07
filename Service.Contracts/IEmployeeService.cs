@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities.Models;
+using Shared.RequestFeatures;
+
 namespace Service.Contracts
 {
     public interface IEmployeeService
     {
-        Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid companyId, bool trackChanges);
+        Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid companyId,EmployeeParameters employeeParameters, bool trackChanges);
         Task<EmployeeDto > GetEmployeeAsync(Guid companyId,Guid employeeId,bool trackChanges);
         Task<EmployeeDto> CreateEmployeeForCompanyAsync(Guid companyId, EmployeeForCreationDto employee,bool trackChanges);
         Task DeleteEmployeeAsync(Guid companyId, Guid employeeId,bool trackChanges);
@@ -19,5 +21,8 @@ namespace Service.Contracts
 Guid companyId, Guid id, bool compTrackChanges, bool empTrackChanges);
         Task SaveChangesForPatchAsync(EmployeeForUpdateDto employeeToPatch, Employee
         employeeEntity);
+        Task CreateEmployeesForCompanyCollectionAsync(Guid companyId,
+             IEnumerable<EmployeeForCreationDto> employees,bool trackChanges);
+
     }
 }

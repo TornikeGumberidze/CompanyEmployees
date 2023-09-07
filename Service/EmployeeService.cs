@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,7 @@ namespace Service
 
         public async Task<EmployeeDto> CreateEmployeeForCompanyAsync(Guid companyId, EmployeeForCreationDto employee, bool trackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
-            if (company == null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
-
+            await CheckIfCompanyExists(companyId, trackChanges);
             var employeeEntity = _mapper.Map<Employee>(employee);
             _repository.Employee.CreateEmployeeForCompany(companyId, employeeEntity);
             await _repository.SaveAsync();
@@ -39,19 +35,22 @@ namespace Service
             return employeeToReturn;
         }
 
+        public async Task CreateEmployeesForCompanyCollectionAsync(Guid companyId, 
+            IEnumerable<EmployeeForCreationDto> employees, bool trackChanges)
+        {
+            await CheckIfCompanyExists(companyId, trackChanges);
+            var employeeEntities = _mapper.Map<IEnumerable<Employee>>(employees);
+            foreach(var employee in employeeEntities)
+            {
+                _repository.Employee.CreateEmployeeForCompany(companyId, employee);
+            }
+            await _repository.SaveAsync();
+        }
 
         public async Task DeleteEmployeeAsync(Guid companyId, Guid employeeId, bool trackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
-            if (company == null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
-            var employee = await _repository.Employee.GetEmployeeAsync(companyId, employeeId, trackChanges);
-            if (employee == null)
-            {
-                throw new EmployeeNotFoundException(employeeId);
-            }
+            await CheckIfCompanyExists(companyId, trackChanges);
+            var employee = await GetEmployeeForCompanyAndCheckIfItExists(companyId,employeeId,trackChanges);
             _repository.Employee.DeleteEmployee(employee);
             await _repository.SaveAsync();
         }
@@ -59,17 +58,9 @@ namespace Service
 
         public async Task<EmployeeDto> GetEmployeeAsync(Guid companyId, Guid employeeId, bool trackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
-            if (company == null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
+            await CheckIfCompanyExists(companyId, trackChanges);
 
-            var employee = await _repository.Employee.GetEmployeeAsync(companyId, employeeId, trackChanges);
-            if (employee == null)
-            {
-                throw new EmployeeNotFoundException(employeeId);
-            }
+            var employee = await GetEmployeeForCompanyAndCheckIfItExists(companyId,employeeId,trackChanges);
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
             return employeeDto;
         }
@@ -77,29 +68,17 @@ namespace Service
 
         public async Task<(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)> GetEmployeeForPatchAsync(Guid companyId, Guid id, bool compTrackChanges, bool empTrackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId, compTrackChanges);
-            if (company == null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
-            var employee = await _repository.Employee.GetEmployeeAsync(companyId, id, empTrackChanges);
-            if (employee == null)
-            {
-                throw new EmployeeNotFoundException(id);
-            }
+            await CheckIfCompanyExists(companyId, compTrackChanges);
+            var employee = await GetEmployeeForCompanyAndCheckIfItExists(companyId,id,empTrackChanges);
             var employeeToPatchToReturn = _mapper.Map<EmployeeForUpdateDto>(employee);
             return (employeeToPatchToReturn, employee);
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid companyId, bool trackChanges)
+        public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid companyId,EmployeeParameters employeeParameters, bool trackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
-            if (company == null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
+            await CheckIfCompanyExists(companyId,trackChanges);
 
-            var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId, trackChanges);
+            var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId,employeeParameters, trackChanges);
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
             return employeesDto;
         }
@@ -112,18 +91,27 @@ namespace Service
 
         public async Task UpdateEmployeeForCompanyAsync(Guid companyId, Guid employeeId, EmployeeForUpdateDto employee, bool compTrackChanges, bool empTrackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId, compTrackChanges);
-            if (company == null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
-            var emp =await  _repository.Employee.GetEmployeeAsync(companyId, employeeId, empTrackChanges);
-            if (emp == null)
-            {
-                throw new EmployeeNotFoundException(employeeId);
-            }
+            await CheckIfCompanyExists(companyId, compTrackChanges);
+            var emp =await  GetEmployeeForCompanyAndCheckIfItExists(companyId,employeeId,empTrackChanges);
             _mapper.Map(employee, emp);
             await _repository.SaveAsync();
+        }
+
+        private async Task CheckIfCompanyExists(Guid companyId, bool trackChanges)
+        {
+            var company = await _repository.Company.GetCompanyAsync(companyId,
+            trackChanges);
+            if (company is null)
+                throw new CompanyNotFoundException(companyId);
+        }
+        private async Task <Employee> GetEmployeeForCompanyAndCheckIfItExists(Guid companyId,Guid id, bool trackChanges)
+        {
+            var employee = await _repository.Employee.GetEmployeeAsync(companyId, id, trackChanges);
+            if(employee is null)
+            {
+                throw new EmployeeNotFoundException(id);
+            }
+            return employee;
         }
     }
 }
