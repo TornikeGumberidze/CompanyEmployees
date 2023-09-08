@@ -8,7 +8,8 @@ using Service.Contracts;
 using Shared.DataTransferObjects;
 using CompanyEmployees.Presentation.ModelBinders;
 using CompanyEmployees.ActionFilters;
-
+using Shared.RequestFeatures;
+using System.Text.Json;
 namespace CompanyEmployees.Presentation.Controllers
 {
 
@@ -21,10 +22,13 @@ namespace CompanyEmployees.Presentation.Controllers
         private readonly IServiceManager _service;
         public CompaniesController(IServiceManager serviceManager) => _service = serviceManager;
         [HttpGet]
-        public async Task< IActionResult > GetCompanies()
+        public async Task< IActionResult > GetCompanies([FromQuery]CompanyParameters companyParameters)
         {
-            var companies = await _service.CompanyService.GetAllCompaniesAsync(trackChanges: false);
-            return Ok(companies);
+            var companies = await _service.CompanyService.GetCompaniesAsync(companyParameters,trackChanges: false);
+            var companiesAndMetaData = await _service.CompanyService.GetCompaniesAsync( companyParameters, trackChanges:
+            false);
+            Response.Headers.Add("X-Pagination",JsonSerializer.Serialize(companiesAndMetaData.MetaData));
+            return Ok(companiesAndMetaData.companyDtos);
         }
         [HttpGet("{id:guid}", Name = "CompanyById")]
         public async Task<IActionResult> GetCompany(Guid id)
