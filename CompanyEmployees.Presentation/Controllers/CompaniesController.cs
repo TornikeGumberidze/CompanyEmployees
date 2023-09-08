@@ -42,15 +42,8 @@ namespace CompanyEmployees.Presentation.Controllers
             createdCompany);
         }
 
-        [HttpGet("collection/({ids})", Name = "CompanyCollection")]//get by ids array
-        public async Task<IActionResult> GetCompanyCollection([ModelBinder(BinderType =
-typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
-        {
-            var companies = await _service.CompanyService.GetByIdsAsync(ids, trackChanges: false);
-            return Ok(companies);
-        }
-
-        [HttpGet("collection/fromswagger", Name = "CompanyCollectionfromswagger")]//get by ids array but from swagger
+        
+        [HttpGet("collection", Name = "CompanyCollection")]//get by ids array but from swagger
         public async Task< IActionResult>GetCompanyCollectionFromSwagger([FromQuery] IEnumerable<Guid> ids)
         {
             var companies = await _service.CompanyService.GetByIdsAsync(ids, trackChanges: false);
@@ -63,7 +56,7 @@ IEnumerable<CompanyForCreationDto> companyCollection)
         {
             var result =
             await _service.CompanyService.CreateCompanyCollectionAsync(companyCollection);
-            return CreatedAtRoute("CompanyCollectionfromswagger", new { result.ids },//naxe;
+            return CreatedAtRoute("CompanyCollection",//naxe;
             result.companies);
         }
         [HttpDelete("{id:Guid}")]

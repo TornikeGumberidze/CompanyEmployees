@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.Filters;
 using CompanyEmployees.ActionFilters;
 using Shared.RequestFeatures;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 
 namespace CompanyEmployees.Presentation.Controllers
 {
@@ -25,14 +27,18 @@ namespace CompanyEmployees.Presentation.Controllers
         public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
             [FromQuery]EmployeeParameters employeeParameters)
         {
-            var employees = await _service.EmployeeService.GetEmployeesAsync(companyId,employeeParameters, trackChanges:
+
+            var employeesAndMetaData = await _service.EmployeeService.GetEmployeesForCompanyAsync(companyId,employeeParameters, trackChanges:
             false);
-            return Ok(employees);
+            Response.Headers.Add("X-Pagination",
+JsonSerializer.Serialize(employeesAndMetaData.metaData));
+            return Ok(employeesAndMetaData.employeeDtos);
+
+
         }
         [HttpGet("{employeeId:guid}",Name = "GetEmployeeForCompany")]
         public async Task<IActionResult> GetEmployeeForCompany(Guid companyId, Guid employeeId)
         {
-            Console.WriteLine($"EmployeeId is {employeeId}");
             var employee = await _service.EmployeeService.GetEmployeeAsync(companyId, employeeId, trackChanges: false);
             return Ok(employee);
         }
