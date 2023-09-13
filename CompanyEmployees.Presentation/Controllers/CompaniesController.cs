@@ -10,11 +10,14 @@ using CompanyEmployees.Presentation.ModelBinders;
 using CompanyEmployees.ActionFilters;
 using Shared.RequestFeatures;
 using System.Text.Json;
+using Marvin.Cache.Headers;
+
 namespace CompanyEmployees.Presentation.Controllers
 {
 
     [Route("api/companies")]
     [ApiController]
+    //[ResponseCache(CacheProfileName = "120SecondsDuration")]
     public class CompaniesController : ControllerBase
     {
 
@@ -31,6 +34,8 @@ namespace CompanyEmployees.Presentation.Controllers
             return Ok(companiesAndMetaData.companyDtos);
         }
         [HttpGet("{id:guid}", Name = "CompanyById")]
+        [HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 60)]
+        [HttpCacheValidation(MustRevalidate = false)]
         public async Task<IActionResult> GetCompany(Guid id)
         {
             var company = await _service.CompanyService.GetCompanyAsync(id, trackChanges: false);

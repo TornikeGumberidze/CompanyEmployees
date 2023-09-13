@@ -20,7 +20,7 @@ builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.Configure<ApiBehaviorOptions>(options =>
+builder.Services.ConfigureResponseCaching();builder.Services.ConfigureHttpCacheHeaders();builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;//custom handling for badrequest
 });
@@ -35,12 +35,18 @@ new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
 
 
 // Add services to the container.
-builder.Services.AddControllers(config => {
+builder.Services.AddControllers(config =>
+{
     // config.RespectBrowserAcceptHeader = true;        
     // to retrieve xml data modify records with init only property also change mappingprofile;
+
     config.ReturnHttpNotAcceptable = true;
     config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-       
+    config.CacheProfiles.Add("120SecondsDuration", new CacheProfile
+    {
+        Duration =
+120
+    });
 })
 .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 var app = builder.Build();
@@ -49,7 +55,8 @@ var logger = app.Services.GetRequiredService<ILoggerManager>();
 app.ConfigureExceptionHandler(logger);
 app.UseSwagger();//wasashleli
 app.UseSwaggerUI(
-    c =>{
+    c =>
+    {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Company Employees v1");
     });
 if (app.Environment.IsProduction())
@@ -62,8 +69,10 @@ app.UseForwardedHeaders(
     new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All }
     );
 app.UseCors("CorsPolicy");
-
+app.UseResponseCaching();
+app.UseHttpCacheHeaders();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

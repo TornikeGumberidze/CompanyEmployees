@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Service;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.Swagger;
+using Marvin.Cache.Headers;
 
 namespace CompanyEmployees.Extensions
 {
@@ -19,7 +20,7 @@ services.AddCors(options =>
      .AllowAnyMethod()
      .AllowAnyHeader()
      .WithExposedHeaders("X-Pagination"));
-    });
+ });
         public static void ConfigureIISIntegration(this IServiceCollection services) =>
  services.Configure<IISOptions>(options =>
  {
@@ -34,13 +35,25 @@ services.AddCors(options =>
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddSwaggerGen(c =>//esaxali
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo{ Title = "My Api", Version = "v1" });
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My Api", Version = "v1" });
             });
         }
         public static void ConfigureSqlContext(this IServiceCollection services,
 IConfiguration configuration) =>
 services.AddDbContext<RepositoryContext>(opts =>
 opts.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
+        public static void ConfigureResponseCaching(this IServiceCollection services) =>
+services.AddResponseCaching();
+        public static void ConfigureHttpCacheHeaders(this IServiceCollection services) =>
+services.AddHttpCacheHeaders(
+    (expirationOpt) =>
+    {
+        expirationOpt.MaxAge = 65;
+        expirationOpt.CacheLocation = Marvin.Cache.Headers.CacheLocation.Private;
+    },
+    (validationOpt) =>
+    {
+        validationOpt.MustRevalidate = true;
+    });
     }
-
 }
