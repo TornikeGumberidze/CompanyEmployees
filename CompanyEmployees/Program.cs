@@ -53,7 +53,7 @@ var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<ILoggerManager>();
 app.ConfigureExceptionHandlerMiddleware(logger);
-app.UseSwagger();//wasashleli
+app.UseSwagger();
 app.UseSwaggerUI(
     c =>
     {

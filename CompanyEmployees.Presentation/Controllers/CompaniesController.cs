@@ -65,7 +65,7 @@ IEnumerable<CompanyForCreationDto> companyCollection)
         {
             var result =
             await _service.CompanyService.CreateCompanyCollectionAsync(companyCollection);
-            return CreatedAtRoute("CompanyCollection",//naxe;
+            return CreatedAtRoute("CompanyCollection",
             result.companies);
         }
         [HttpDelete("{id:Guid}")]
