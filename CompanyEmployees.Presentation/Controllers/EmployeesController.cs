@@ -78,7 +78,7 @@ JsonSerializer.Serialize(employeesAndMetaData.metaData));
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateEmployeeForCompany(Guid companyId, Guid employeeId, [FromBody] EmployeeForUpdateDto employee)
         {
-            await _service.EmployeeService.UpdateEmployeeForCompanyAsync(companyId, employeeId, employee, false, true);
+            await _service.EmployeeService.UpdateEmployeeForCompanyAsync(companyId, employeeId, employee,false, true);
             return NoContent();
         }
 

@@ -5,7 +5,9 @@
     {
         public IdParametersBadRequestException()
         : base("Parameter ids is null")
+
         {
+
         }
     }
 

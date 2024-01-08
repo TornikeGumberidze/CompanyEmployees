@@ -7,7 +7,7 @@ using System.Net;
 
 public static class ExceptionMiddlewareExtensions
 {
-    public static void ConfigureExceptionHandler(this WebApplication app,
+    public static void ConfigureExceptionHandlerMiddleware(this WebApplication app,
    ILoggerManager logger)
     {
         app.UseExceptionHandler(appError =>

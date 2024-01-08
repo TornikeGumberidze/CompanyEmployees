@@ -6,6 +6,7 @@
         public CollectionByIdsBadRequestException()
         : base("Collection count mismatch comparing to ids.")
         {
+
         }
     }
 }

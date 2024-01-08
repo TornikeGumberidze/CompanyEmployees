@@ -52,7 +52,7 @@ builder.Services.AddControllers(config =>
 var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<ILoggerManager>();
-app.ConfigureExceptionHandler(logger);
+app.ConfigureExceptionHandlerMiddleware(logger);
 app.UseSwagger();//wasashleli
 app.UseSwaggerUI(
     c =>

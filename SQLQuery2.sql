@@ -1,1 +1,0 @@
-﻿select EmployeeId, Companiesx.CompanyId from Companies join Employees on Companies.CompanyId = Employees.CompanyId

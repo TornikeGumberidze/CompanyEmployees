@@ -5,11 +5,6 @@ using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service
 {
@@ -42,7 +37,7 @@ logger,IMapper mapper)
         public async  Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company)
         {
             var companyEntity=_mapper.Map<Company>(company);
-
+            
             _repository.Company.CreateCompany(companyEntity);
             await _repository.SaveAsync();
             var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
